@@ -16,6 +16,11 @@ ethcore-devtools = { path = "../devtools" }
 ethcore-io = { path = "../util/io" }
 ethcore-logger = { path = "../logger" }
 ethstore = { path = "../ethstore" }
+regex = "0.1"
+lazy_static = "0.2.1"
+
+[dependencies.ethabi]
+git = "https://github.com/ethcore/ethabi"
 
 [[bin]]
 path = "main.rs"
