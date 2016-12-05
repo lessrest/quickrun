@@ -136,7 +136,7 @@ impl<'a> Runner<'a> {
     );
   
     block.push_transaction(
-      transaction.sign(&self.secret), None
+      transaction.sign(&self.secret, None), None
     ).unwrap();
   
     self.client.import_sealed_block(
@@ -345,7 +345,8 @@ fn run() -> Result<(), String> {
 
   let temp = RandomTempPath::new();
   let path = temp.as_path();
-  let spec = Spec::load(include_bytes!("./chain.json"));
+  let mut spec_json: &[u8] = include_bytes!("./chain.json");
+  let spec = Spec::load(&mut spec_json).unwrap();
 
   let miner = Arc::new(Miner::with_spec(&spec));
   let client = Client::new(
@@ -353,7 +354,8 @@ fn run() -> Result<(), String> {
     &spec,
     &path,
     miner,
-    IoChannel::disconnected()
+    IoChannel::disconnected(),
+    &util::DatabaseConfig::with_columns(ethcore::db::NUM_COLUMNS),
   ).unwrap();
 
   let secret = Secret::from_str(
@@ -386,7 +388,7 @@ fn run() -> Result<(), String> {
 
         let should_fail = SHOULD_FAIL_PATTERN.is_match(&func.name);
         let ok = !failed && match trace[0].result {
-          FailedCall => should_fail,
+          FailedCall(_) => should_fail,
           _ => !should_fail
         };
 
