@@ -130,9 +130,7 @@ struct Runner<'a> {
 impl<'a> Runner<'a> {
   fn execute(&self, transaction: Transaction) {
     let mut block = self.client.prepare_open_block(
-      self.account,
-      (1.into(), 1_000_000.into()), // XXX what is this actually?
-      vec![]
+      self.account, (1.into(), 1.into()), vec![]
     );
   
     block.push_transaction(
@@ -153,7 +151,7 @@ impl<'a> Runner<'a> {
       action: Action::Create,
       value: U256::from(0),
       data: code.clone(),
-      gas: U256::from(50_000_000), // XXX parameterize gas
+      gas: U256::from(2_000_000_000),
       gas_price: U256::one(),
       nonce: self.client.latest_nonce(&self.account)
     });
@@ -165,7 +163,7 @@ impl<'a> Runner<'a> {
     self.execute(Transaction {
       nonce: self.client.latest_nonce(&self.account),
       action: Action::Call(contract),
-      gas: U256::from(50_000_000), // XXX parameterize gass
+      gas: U256::from(2_000_000_000),
       gas_price: U256::default(),
       value: U256::default(),
       data: abi::Function::new(spec.clone()).encode_call(vec![]).unwrap()
@@ -183,7 +181,7 @@ impl<'a> Runner<'a> {
     self.client.call(&self.fake_sign(Transaction {
       nonce: self.latest_nonce(util::Address::default()),
       action: Action::Call(contract),
-      gas: U256::from(50_000_000),
+      gas: U256::from(2_000_000_000),
       gas_price: U256::default(),
       value: U256::default(),
       data: abi::Function::new(spec.clone()).encode_call(vec![]).unwrap()
